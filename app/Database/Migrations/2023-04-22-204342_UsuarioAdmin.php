@@ -11,24 +11,23 @@ class UsuarioAdmin extends Migration
         $this->forge->addField([
             'Rut' => [
                 'type'           => 'Varchar',
-                'constraint'     => '19',
-                'unsigned'       => true,
+                'constraint'     => '19'
             ],
             'Nombre' => [
                 'type'       => 'VARCHAR',
-                'constraint' => '100',
+                'constraint' => '100'
             ],
             'ApellidoM' => [
                 'type'       => 'VARCHAR',
-                'constraint' => '100',
+                'constraint' => '100'
             ],
             'ApellidoP' => [
                 'type'       => 'VARCHAR',
-                'constraint' => '100',
+                'constraint' => '100'
             ],
             'Constraseña' => [
                 'type'       => 'VARCHAR',
-                'constraint' => '100',
+                'constraint' => '100'
             ],
         ]);
         $this->forge->addKey('Rut', true);
