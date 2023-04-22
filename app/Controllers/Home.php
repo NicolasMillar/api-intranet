@@ -11,20 +11,20 @@ class Home extends BaseController
     }
 
     public function login(){
-        $rut = $request->getPost('rut');
-        $password = $request->getPost('password');
-        $userType = $request->getPost('userType');
+        $rut = $this->request->getPost('rut');
+        $password = $this->request->getPost('password');
+        $userType = $this->request->getPost('userType');
 
         if($userType === 'administrador'){
             $admin = new usuarioAdmin();
-
-            $dataUsuario = $admin->obtenerAdmin(['rut' => $rut]);
+            echo "<script>console.log('Entro en admin' );</script>";
+            $dataUsuario = $admin->obtenerAdmin(['Rut' => $rut]);
 
             if(count($dataUsuario) > 0 && password_verify($password, $dataUsuario[0]['Constraseña'])){
                 $token = generateToken($dataUsuario[0]['Rut'], $userType);
-                return $response->setJSON(['token' => $token]);
+                return $this->response->setJSON(['token' => $token]);
             }else{
-                return $response->setStatusCode(401)->setJSON(['error' => 'Credenciales inválidas']);
+                return $this->response->setStatusCode(401)->setJSON(['error' => 'Credenciales inválidas']);
             }
         }
     }
