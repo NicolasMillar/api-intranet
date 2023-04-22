@@ -8,7 +8,7 @@ class UsuarioAdmin extends Seeder
 {
     public function run()
     {
-        $password = password_hash("123", PASSWORD_DEFAULT);
+        $password = password_hash(env('SEED_PASSWORD'), PASSWORD_DEFAULT);
 
         $data = [
             'Rut' => '198347442',
