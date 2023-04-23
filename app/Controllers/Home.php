@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 use App\Models\usuarioAdmin;
+use App\Models\usuarioProfesor;
+use App\Models\usuarioAlumno;
 
 class Home extends BaseController
 {
@@ -36,7 +38,29 @@ class Home extends BaseController
             }
 
             return $this->response->setStatusCode(401)->setJSON(['error' => 'Credenciales inválidas']);
+        }else if($userType === 'profesor'){
+            $profesor = new usuarioProfesor();
+            $dataUsuario = $profesor->obtenerProfesor(['Rut' => $rut]);
+
+            if(count($dataUsuario) > 0 && password_verify($passowrd, $dataUsuario[0]['Constraseña'])){
+                $token = generateToken($dataUsuario[0]['Rut'], $userType);
+                return $this->response->setJSON(['token' => $token]);
+            }
+
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'Credenciales inválidas']);
+        }else if($userType === 'alumno'){
+            $alumno = new usuarioAlumno();
+            $dataUsuario = $alumno->obtenerAlumno(['Rut' => $rut]);
+
+            if(count($dataUsuario) > 0 && password_verify($passowrd, $dataUsuario[0]['Constraseña'])){
+                $token = generateToken($dataUsuario[0]['Rut'], $userType);
+                return $this->response->setJSON(['token' => $token]);
+            }
+
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'Credenciales inválidas']);
         }
+
+        return $this->response->setStatusCode(401)->setJSON(['error' => 'Debe seleccionar un Tipo de usuario']);
     }
 
     
