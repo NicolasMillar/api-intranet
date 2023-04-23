@@ -34,7 +34,8 @@ class Home extends BaseController
 
             if(count($dataUsuario) > 0 && password_verify($passowrd, $dataUsuario[0]['Constraseña'])){
                 $token = generateToken($dataUsuario[0]['Rut'], $userType);
-                return $this->response->setJSON(['token' => $token]);
+
+                return $this->response->setJSON(['token' => $token, 'user' => $dataUsuario[0]]);
             }
 
             return $this->response->setStatusCode(401)->setJSON(['error' => 'Credenciales inválidas']);
@@ -44,7 +45,7 @@ class Home extends BaseController
 
             if(count($dataUsuario) > 0 && password_verify($passowrd, $dataUsuario[0]['Constraseña'])){
                 $token = generateToken($dataUsuario[0]['Rut'], $userType);
-                return $this->response->setJSON(['token' => $token]);
+                return $this->response->setJSON(['token' => $token, 'user' => $dataUsuario[0]]);
             }
 
             return $this->response->setStatusCode(401)->setJSON(['error' => 'Credenciales inválidas']);
@@ -54,7 +55,7 @@ class Home extends BaseController
 
             if(count($dataUsuario) > 0 && password_verify($passowrd, $dataUsuario[0]['Constraseña'])){
                 $token = generateToken($dataUsuario[0]['Rut'], $userType);
-                return $this->response->setJSON(['token' => $token]);
+                return $this->response->setJSON(['token' => $token, 'user' => $dataUsuario[0]]);
             }
 
             return $this->response->setStatusCode(401)->setJSON(['error' => 'Credenciales inválidas']);
