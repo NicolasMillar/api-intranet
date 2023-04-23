@@ -2,7 +2,7 @@
     "name": "codeigniter4/appstarter",
     "type": "project",
     "description": "CodeIgniter4 starter app",
-    "homepage": "https://codeigniter.com",
+    "homepage": "https://api-codeignitor.azurewebsites.net",
     "license": "MIT",
     "require": {
         "php": "^7.4 || ^8.0",
