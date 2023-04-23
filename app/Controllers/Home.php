@@ -64,5 +64,7 @@ class Home extends BaseController
         return $this->response->setStatusCode(401)->setJSON(['error' => 'Debe seleccionar un Tipo de usuario']);
     }
 
+    public function prueba(){}
+
     
 }
