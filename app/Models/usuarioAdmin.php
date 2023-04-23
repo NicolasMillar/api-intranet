@@ -1,5 +1,5 @@
 <?php namespace App\Models;
-    use Codeigniter\Model;
+    use CodeIgniter\Model;
 
     class usuarioAdmin extends Model{
 
