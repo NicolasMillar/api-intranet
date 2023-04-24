@@ -1,5 +1,7 @@
 <?php
 
+define('CI_DEBUG', FALSE); // bypass (bool) app/Config/Boot/development.php
+
 // Check PHP version.
 $minPhpVersion = '7.4'; // If you update this, don't forget to update `spark`.
 if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
