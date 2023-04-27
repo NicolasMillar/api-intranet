@@ -15,4 +15,9 @@
             return $databes->get()->getResultArray();
         }
 
+        public function eliminar($data){
+            $database = $this->db->table('usuarioProfesor');
+            $database->where($data);
+            return $database->delete();
+        }
     }

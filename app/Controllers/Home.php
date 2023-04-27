@@ -135,9 +135,21 @@ class Home extends BaseController
             }
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
         }else if($userType === 'profesor'){
-
+            $profesor = new usuarioProfesor();
+            $data = ["Rut" => $this->request->getPost('Rut')];
+            $response = $profesor->eliminar($data);
+            if($response){
+                return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
+            }
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
         }else{
-
+            $alumno = new usuarioAlumno();
+            $data = ["Rut" => $this->request->getPost('Rut')];
+            $response = $alumno->eliminar($data);
+            if($response){
+                return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
+            }
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
         }
     }
     
