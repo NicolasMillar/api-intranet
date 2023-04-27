@@ -115,6 +115,12 @@ class Home extends BaseController
                 'FechaIngreso' => $this->request->getPost('FechaIngreso'),
                 'Imagen' => $this->request->getPost('Imagen'),      
             ];
+            $alumno = new usuarioAlumno();
+            $response = $alumno->insertar($data);
+            if($response > 0){
+                return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
+            }
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
         }
     }
 

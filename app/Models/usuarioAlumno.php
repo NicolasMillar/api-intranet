@@ -9,4 +9,10 @@
             return $admin->get()->getResultArray();
         }
 
+        public function insertar($data) {
+            $databes = $this->db->table('usuarioAlumno');
+            $databes->insert($data);
+            return $databes->get()->getResultArray();
+        }
+
     }
