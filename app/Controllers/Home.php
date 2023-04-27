@@ -79,13 +79,42 @@ class Home extends BaseController
             $response = $admin->insertar($data);
             if($response > 0){
                 return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
-            }else{
-                return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
             }
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
         }else if($userType === 'profesor'){
-
+            $data = [
+                'Rut' => $this->request->getPost('Rut'),
+                'Nombre' => $this->request->getPost('Nombre'), 
+                'ApellidoM' => $this->request->getPost('ApellidoM'), 
+                'ApellidoP' => $this->request->getPost('ApellidoP'), 
+                'Constraseña' => $password,
+                'Direccion' => $this->request->getPost('Direccion'),
+                'Comuna' => $this->request->getPost('Comuna'),
+                'Region' => $this->request->getPost('Region'),
+                'FechaNacimiento' => $this->request->getPost('FechaNacimiento'),
+                'FechaIngreso' => $this->request->getPost('FechaIngreso'),
+                'Imagen' => $this->request->getPost('Imagen'),      
+            ];
+            $profesor = new usuarioProfesor();
+            $response = $profesor->insertar($data);
+            if($response > 0){
+                return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
+            }
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
         }else{
-
+            $data = [
+                'Rut' => $this->request->getPost('Rut'),
+                'Nombre' => $this->request->getPost('Nombre'), 
+                'ApellidoM' => $this->request->getPost('ApellidoM'), 
+                'ApellidoP' => $this->request->getPost('ApellidoP'), 
+                'Constraseña' => $password,
+                'Direccion' => $this->request->getPost('Direccion'),
+                'Comuna' => $this->request->getPost('Comuna'),
+                'Region' => $this->request->getPost('Region'),
+                'FechaNacimiento' => $this->request->getPost('FechaNacimiento'),
+                'FechaIngreso' => $this->request->getPost('FechaIngreso'),
+                'Imagen' => $this->request->getPost('Imagen'),      
+            ];
         }
     }
 
