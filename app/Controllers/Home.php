@@ -65,6 +65,10 @@ class Home extends BaseController
     }
 
     public function createUser(){
+        $token = $this->request->getHeaderLine('Authorization');
+        if (!validateToken($token)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Token de seguridad inválido']);
+        }
         $userType = $this->request->getPost('userType');
         $password = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
         if($userType === 'administrador'){
@@ -125,6 +129,10 @@ class Home extends BaseController
     }
 
     public function deleteUser(){
+        $token = $this->request->getHeaderLine('Authorization');
+        if (!validateToken($token)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Token de seguridad inválido']);
+        }
         $userType = $this->request->getPost('userType');
         if($userType === 'administrador'){
             $admin = new usuarioAdmin();
