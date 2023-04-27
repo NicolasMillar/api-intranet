@@ -77,7 +77,7 @@ class Home extends BaseController
             ];
             $admin = new usuarioAdmin();
             $response = $admin->insertar($data);
-            if($respuesta > 0){
+            if($response > 0){
                 return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
             }else{
                 return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
