@@ -153,4 +153,21 @@ class Home extends BaseController
         }
     }
     
+    private function validateToken($token){
+        try {
+            $decodedToken = JWT::decode($token, getenv('JWT_SECRET'), array('HS256'));
+            $userModel = new UserModel();
+            $user = $userModel->find($decodedToken->user_id);
+            if ($user && $decodedToken->exp > time() && $decodedToken->user_id == $user->id) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+
+
 }
