@@ -100,7 +100,7 @@ class Home extends BaseController
             if($response > 0){
                 return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
             }
-            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo profesor']);
         }else{
             $data = [
                 'Rut' => $this->request->getPost('Rut'),
@@ -120,12 +120,25 @@ class Home extends BaseController
             if($response > 0){
                 return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
             }
-            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo alumno']);
         }
     }
 
     public function deleteUser(){
-        //logica para eliminar usuarios
+        $userType = $this->request->getPost('userType');
+        if($userType === 'administrador'){
+            $admin = new usuarioAdmin();
+            $data = ["Rut" => $this->request->getPost('Rut')];
+            $response = $admin->eliminar($data);
+            if($response){
+                return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
+            }
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
+        }else if($userType === 'profesor'){
+
+        }else{
+
+        }
     }
     
 }

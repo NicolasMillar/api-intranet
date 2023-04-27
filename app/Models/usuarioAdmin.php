@@ -15,4 +15,10 @@
             return $databes->get()->getResultArray();
         }
 
+        public function eliminar($data){
+            $database = $this->db->table('usuarioAdmin');
+            $database->where($data);
+            return $database->delete();
+        }
+
     }
