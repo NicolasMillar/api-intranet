@@ -65,7 +65,28 @@ class Home extends BaseController
     }
 
     public function createUser(){
-        //logica para crear usuarios
+        $userType = $this->request->getPost('userType');
+        $password = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
+        if($userType === 'administrador'){
+            $data = [
+                'Rut' => $this->request->getPost('Rut'),
+                'Nombre' => $this->request->getPost('Nombre'), 
+                'ApellidoM' => $this->request->getPost('ApellidoM'), 
+                'ApellidoP' => $this->request->getPost('ApellidoP'), 
+                'Constraseña' => $password
+            ];
+            $admin = new usuarioAdmin();
+            $response = $admin->insertar($data);
+            if($respuesta > 0){
+                return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
+            }else{
+                return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
+            }
+        }else if($userType === 'profesor'){
+
+        }else{
+
+        }
     }
 
     public function deleteUser(){
