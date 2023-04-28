@@ -4,7 +4,6 @@ namespace App\Controllers;
 use App\Models\usuarioAdmin;
 use App\Models\usuarioProfesor;
 use App\Models\usuarioAlumno;
-use Firebase\JWT\JWT;
 
 class Home extends BaseController
 {
@@ -13,25 +12,16 @@ class Home extends BaseController
         return view('welcome_message');
     }
 
-    private function validateToken($token, $userType){
-        try {
-            $decodedToken = JWT::decode($token, getenv('JWT_SECRET'), array('HS256'));
-            if($userType === 'administrador'){
-                $userModel = new usuarioAdmin();
-                $user = $userModel->find($decodedToken->user_id);
-            }else if($userType === 'profesor'){
-                $userModel = new usuarioProfesor();
-                $user = $userModel->find($decodedToken->user_id);
-            }else{
-                $userModel = new usuarioAlumno();
-                $user = $userModel->find($decodedToken->user_id);
-            }
-            if ($user && $decodedToken->exp > time() && $decodedToken->user_id == $user->id) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception $e) {
+    private function validateToken($token, $userId, $userType){
+        $randomString = getenv('JWT_SECRET');
+        $data = ['userId' => $userId, 'userType' => $userType];
+        $jsonData = json_encode($data);
+        $signature = hash_hmac('sha256', $jsonData, $randomString);
+        $newtoken = $randomString . '.' . $signature;
+
+        if($newtoken === $token){
+            return true;
+        }else{
             return false;
         }
     }
@@ -39,7 +29,7 @@ class Home extends BaseController
     public function login(){
 
         function generateToken($userId, $userType) {
-            $randomString = bin2hex(random_bytes(16));
+            $randomString = getenv('JWT_SECRET');
             $data = ['userId' => $userId, 'userType' => $userType];
             $jsonData = json_encode($data);
             $signature = hash_hmac('sha256', $jsonData, $randomString);
@@ -187,10 +177,12 @@ class Home extends BaseController
 
     public function test(){
         $token = $this->request->getHeaderLine('Authorization');
-        if(!$this->validateToken($token)){
-            return $this->response->setJSON(['token' => $token]);
+        $Rut = $this->request->getPost('Rut');
+        $userType = $this->request->getPost('userType');
+        if(!$this->validateToken($token, $Rut, $userType)){
+            return $this->response->setJSON(['Mensaje' => 'Token invalido' ]);
         }
-        return $this->response->setJSON(['Mensaje' => 'token invalido' ]);
+        return $this->response->setJSON(['Mensaje' => 'Token valido' ]);
     }
 
 }
