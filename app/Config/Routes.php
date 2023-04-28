@@ -33,6 +33,7 @@ $routes->get('/', 'Home::index');
 $routes->post('/login', 'Home::login');
 $routes->post('/create', 'Home::createUser');
 $routes->post('/delete', 'Home::deleteUser');
+$routes->post('/test', 'Home::test');
 /*
  * --------------------------------------------------------------------
  * Additional Routing

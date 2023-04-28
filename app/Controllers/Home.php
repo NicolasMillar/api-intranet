@@ -4,12 +4,36 @@ namespace App\Controllers;
 use App\Models\usuarioAdmin;
 use App\Models\usuarioProfesor;
 use App\Models\usuarioAlumno;
+use Firebase\JWT\JWT;
 
 class Home extends BaseController
 {
     public function index()
     {
         return view('welcome_message');
+    }
+
+    private function validateToken($token, $userType){
+        try {
+            $decodedToken = JWT::decode($token, getenv('JWT_SECRET'), array('HS256'));
+            if($userType === 'administrador'){
+                $userModel = new usuarioAdmin();
+                $user = $userModel->find($decodedToken->user_id);
+            }else if($userType === 'profesor'){
+                $userModel = new usuarioProfesor();
+                $user = $userModel->find($decodedToken->user_id);
+            }else{
+                $userModel = new usuarioAlumno();
+                $user = $userModel->find($decodedToken->user_id);
+            }
+            if ($user && $decodedToken->exp > time() && $decodedToken->user_id == $user->id) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function login(){
@@ -160,22 +184,13 @@ class Home extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
         }
     }
-    
-    private function validateToken($token){
-        try {
-            $decodedToken = JWT::decode($token, getenv('JWT_SECRET'), array('HS256'));
-            $userModel = new UserModel();
-            $user = $userModel->find($decodedToken->user_id);
-            if ($user && $decodedToken->exp > time() && $decodedToken->user_id == $user->id) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception $e) {
-            return false;
+
+    public function test(){
+        $token = $this->request->getHeaderLine('Authorization');
+        if(!$this->validateToken($token)){
+            return $this->response->setJSON(['token' => $token]);
         }
+        return $this->response->setJSON(['Mensaje' => 'token invalido' ]);
     }
-
-
 
 }

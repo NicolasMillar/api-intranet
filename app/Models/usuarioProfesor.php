@@ -20,4 +20,10 @@
             $database->where($data);
             return $database->delete();
         }
+
+        public function econtrar($data){
+            $database = $this->db->table('usuarioProfesor');
+            $database->where($data);
+            return $database->get()->getResultArray();
+        }
     }
