@@ -12,12 +12,18 @@ class Home extends BaseController
         return view('welcome_message');
     }
 
-    private function validateToken($token, $userId, $userType){
+    private function generateToken($userId, $userType) {
         $randomString = getenv('JWT_SECRET');
         $data = ['userId' => $userId, 'userType' => $userType];
         $jsonData = json_encode($data);
         $signature = hash_hmac('sha256', $jsonData, $randomString);
-        $newtoken = $randomString . '.' . $signature;
+        $token = $randomString . '.' . $signature;
+        
+        return $token;
+    }
+
+    private function validateToken($token, $userId, $userType){
+        $newtoken = $this->generateToken($userId, $userType);
 
         $longitudC1 = strlen($newtoken);
         $longitudC2 = strlen($token);
@@ -40,16 +46,6 @@ class Home extends BaseController
 
     public function login(){
 
-        function generateToken($userId, $userType) {
-            $randomString = getenv('JWT_SECRET');
-            $data = ['userId' => $userId, 'userType' => $userType];
-            $jsonData = json_encode($data);
-            $signature = hash_hmac('sha256', $jsonData, $randomString);
-            $token = $randomString . '.' . $signature;
-            
-            return $token;
-        }
-
         $rut = $this->request->getPost('rut');
         $passowrd = $this->request->getPost('password');
         $userType = $this->request->getPost('userType');
@@ -59,7 +55,7 @@ class Home extends BaseController
             $dataUsuario = $admin->obtenerAdmin(['Rut' => $rut]);
 
             if(count($dataUsuario) > 0 && password_verify($passowrd, $dataUsuario[0]['Constraseña'])){
-                $token = generateToken($dataUsuario[0]['Rut'], $userType);
+                $token = $this->generateToken($dataUsuario[0]['Rut'], $userType);
 
                 return $this->response->setJSON(['token' => $token, 'user' => $dataUsuario[0]]);
             }
@@ -70,7 +66,7 @@ class Home extends BaseController
             $dataUsuario = $profesor->obtenerProfesor(['Rut' => $rut]);
 
             if(count($dataUsuario) > 0 && password_verify($passowrd, $dataUsuario[0]['Constraseña'])){
-                $token = generateToken($dataUsuario[0]['Rut'], $userType);
+                $token = $this->generateToken($dataUsuario[0]['Rut'], $userType);
                 return $this->response->setJSON(['token' => $token, 'user' => $dataUsuario[0]]);
             }
 
@@ -80,7 +76,7 @@ class Home extends BaseController
             $dataUsuario = $alumno->obtenerAlumno(['Rut' => $rut]);
 
             if(count($dataUsuario) > 0 && password_verify($passowrd, $dataUsuario[0]['Constraseña'])){
-                $token = generateToken($dataUsuario[0]['Rut'], $userType);
+                $token = $this->generateToken($dataUsuario[0]['Rut'], $userType);
                 return $this->response->setJSON(['token' => $token, 'user' => $dataUsuario[0]]);
             }
 
