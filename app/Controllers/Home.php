@@ -16,8 +16,8 @@ class Home extends BaseController
         $randomString = getenv('JWT_SECRET');
         $data = ['userId' => $userId, 'userType' => $userType];
         $jsonData = json_encode($data);
-        $signature = hash_hmac('sha256', $jsonData, $randomString);
-        $token = $randomString . '.' . $signature;
+        $signature = $randomString . $jsonData;
+        $token = password_hash($signature, PASSWORD_DEFAULT);;
         
         return $token;
     }
@@ -89,14 +89,13 @@ class Home extends BaseController
     public function createUser(){
         $token = $this->request->getHeaderLine('Authorization');
         $userType = $this->request->getPost('userType');
-        $Rut = $this->request->getPost('Rut');
         if (!$this->validateToken($token, $Rut, $userType)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Token de seguridad inválido']);
         }
         $password = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
         if($userType === 'administrador'){
             $data = [
-                'Rut' => $Rut,
+                'Rut' => $this->request->getPost('Rut'),
                 'Nombre' => $this->request->getPost('Nombre'), 
                 'ApellidoM' => $this->request->getPost('ApellidoM'), 
                 'ApellidoP' => $this->request->getPost('ApellidoP'), 
@@ -110,7 +109,7 @@ class Home extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
         }else if($userType === 'profesor'){
             $data = [
-                'Rut' => $Rut,
+                'Rut' => $this->request->getPost('Rut'),
                 'Nombre' => $this->request->getPost('Nombre'), 
                 'ApellidoM' => $this->request->getPost('ApellidoM'), 
                 'ApellidoP' => $this->request->getPost('ApellidoP'), 
@@ -130,7 +129,7 @@ class Home extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo profesor']);
         }else{
             $data = [
-                'Rut' => $Rut,
+                'Rut' => $this->request->getPost('Rut'),
                 'Nombre' => $this->request->getPost('Nombre'), 
                 'ApellidoM' => $this->request->getPost('ApellidoM'), 
                 'ApellidoP' => $this->request->getPost('ApellidoP'), 
@@ -154,13 +153,12 @@ class Home extends BaseController
     public function deleteUser(){
         $token = $this->request->getHeaderLine('Authorization');
         $userType = $this->request->getPost('userType');
-        $Rut = $this->request->getPost('Rut');
         if (!$this->validateToken($token, $Rut, $userType)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Token de seguridad inválido']);
         }
         if($userType === 'administrador'){
             $admin = new usuarioAdmin();
-            $data = ["Rut" => $Rut];
+            $data = ["Rut" => $this->request->getPost('Rut')];
             $response = $admin->eliminar($data);
             if($response){
                 return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
@@ -168,7 +166,7 @@ class Home extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
         }else if($userType === 'profesor'){
             $profesor = new usuarioProfesor();
-            $data = ["Rut" => $Rut];
+            $data = ["Rut" => $this->request->getPost('Rut')];
             $response = $profesor->eliminar($data);
             if($response){
                 return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
@@ -176,7 +174,7 @@ class Home extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
         }else{
             $alumno = new usuarioAlumno();
-            $data = ["Rut" => $Rut];
+            $data = ["Rut" => $this->request->getPost('Rut')];
             $response = $alumno->eliminar($data);
             if($response){
                 return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
