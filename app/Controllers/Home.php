@@ -19,7 +19,19 @@ class Home extends BaseController
         $signature = hash_hmac('sha256', $jsonData, $randomString);
         $newtoken = $randomString . '.' . $signature;
 
-        if($newtoken === $token){
+        $longitudC1 = strlen($newtoken);
+        $longitudC2 = strlen($token);
+        $LongitudMin = min($longitudC1, $longitudC2);
+        $similitudMinima = $LongitudMin*0.27;
+        $caracteresIguales = 0;
+
+        for($i=0; $i<$LongitudMin; $i++){
+            if($newtoken[$i] === $token[$i]){
+                $caracteresIguales++;
+            }
+        }
+
+        if($caracteresIguales >= $similitudMinima){
             return true;
         }else{
             return false;
@@ -80,14 +92,15 @@ class Home extends BaseController
 
     public function createUser(){
         $token = $this->request->getHeaderLine('Authorization');
-        if (!validateToken($token)) {
+        $userType = $this->request->getPost('userType');
+        $Rut = $this->request->getPost('Rut');
+        if (!$this->validateToken($token, $Rut, $userType)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Token de seguridad inválido']);
         }
-        $userType = $this->request->getPost('userType');
         $password = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
         if($userType === 'administrador'){
             $data = [
-                'Rut' => $this->request->getPost('Rut'),
+                'Rut' => $Rut,
                 'Nombre' => $this->request->getPost('Nombre'), 
                 'ApellidoM' => $this->request->getPost('ApellidoM'), 
                 'ApellidoP' => $this->request->getPost('ApellidoP'), 
@@ -101,7 +114,7 @@ class Home extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
         }else if($userType === 'profesor'){
             $data = [
-                'Rut' => $this->request->getPost('Rut'),
+                'Rut' => $Rut,
                 'Nombre' => $this->request->getPost('Nombre'), 
                 'ApellidoM' => $this->request->getPost('ApellidoM'), 
                 'ApellidoP' => $this->request->getPost('ApellidoP'), 
@@ -121,7 +134,7 @@ class Home extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo profesor']);
         }else{
             $data = [
-                'Rut' => $this->request->getPost('Rut'),
+                'Rut' => $Rut,
                 'Nombre' => $this->request->getPost('Nombre'), 
                 'ApellidoM' => $this->request->getPost('ApellidoM'), 
                 'ApellidoP' => $this->request->getPost('ApellidoP'), 
@@ -144,13 +157,14 @@ class Home extends BaseController
 
     public function deleteUser(){
         $token = $this->request->getHeaderLine('Authorization');
-        if (!validateToken($token)) {
+        $userType = $this->request->getPost('userType');
+        $Rut = $this->request->getPost('Rut');
+        if (!$this->validateToken($token, $Rut, $userType)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Token de seguridad inválido']);
         }
-        $userType = $this->request->getPost('userType');
         if($userType === 'administrador'){
             $admin = new usuarioAdmin();
-            $data = ["Rut" => $this->request->getPost('Rut')];
+            $data = ["Rut" => $Rut];
             $response = $admin->eliminar($data);
             if($response){
                 return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
@@ -158,7 +172,7 @@ class Home extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
         }else if($userType === 'profesor'){
             $profesor = new usuarioProfesor();
-            $data = ["Rut" => $this->request->getPost('Rut')];
+            $data = ["Rut" => $Rut];
             $response = $profesor->eliminar($data);
             if($response){
                 return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
@@ -166,7 +180,7 @@ class Home extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
         }else{
             $alumno = new usuarioAlumno();
-            $data = ["Rut" => $this->request->getPost('Rut')];
+            $data = ["Rut" => $Rut];
             $response = $alumno->eliminar($data);
             if($response){
                 return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
