@@ -23,25 +23,15 @@ class Home extends BaseController
     }
 
     private function validateToken($token, $userId, $userType){
-        $newtoken = $this->generateToken($userId, $userType);
+        $randomString = getenv('JWT_SECRET');
+        $data = ['userId' => $userId, 'userType' => $userType];
+        $jsonData = json_encode($data);
+        $comparar = $randomString . $jsonData;
 
-        $longitudC1 = strlen($newtoken);
-        $longitudC2 = strlen($token);
-        $LongitudMin = min($longitudC1, $longitudC2);
-        $similitudMinima = $LongitudMin*0.27;
-        $caracteresIguales = 0;
-
-        for($i=0; $i<$LongitudMin; $i++){
-            if($newtoken[$i] === $token[$i]){
-                $caracteresIguales++;
-            }
-        }
-
-        if($caracteresIguales >= $similitudMinima){
+        if(password_verify($comparar, $token)){
             return true;
-        }else{
-            return false;
         }
+        return false;
     }
 
     public function login(){
@@ -89,6 +79,7 @@ class Home extends BaseController
     public function createUser(){
         $token = $this->request->getHeaderLine('Authorization');
         $userType = $this->request->getPost('userType');
+        $Rut = $this->request->getPost('RutAdmin');
         if (!$this->validateToken($token, $Rut, $userType)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Token de seguridad inválido']);
         }
@@ -153,6 +144,7 @@ class Home extends BaseController
     public function deleteUser(){
         $token = $this->request->getHeaderLine('Authorization');
         $userType = $this->request->getPost('userType');
+        $Rut = $this->request->getPost('RutAdmin');
         if (!$this->validateToken($token, $Rut, $userType)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Token de seguridad inválido']);
         }
