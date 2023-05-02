@@ -163,15 +163,20 @@ class Home extends BaseController
     }
 
     public function deleteUser(){
+        //datos y variables globales
         $token = $this->request->getHeaderLine('Authorization');
         $userType = $this->request->getPost('userType');
         $Rut = $this->request->getPost('RutAdmin');
+        $data = ["Rut" => $this->request->getPost('Rut')];
+
+        //verificacion de token de seguridad
         if (!$this->validateToken($token, $Rut, $userType)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Token de seguridad inválido']);
         }
+
+        //eliminacion correspondiente a los distintos tipos de usuarios
         if($userType === 'administrador'){
             $admin = new usuarioAdmin();
-            $data = ["Rut" => $this->request->getPost('Rut')];
             $response = $admin->eliminar($data);
             if($response){
                 return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
@@ -179,21 +184,22 @@ class Home extends BaseController
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
         }else if($userType === 'profesor'){
             $profesor = new usuarioProfesor();
-            $data = ["Rut" => $this->request->getPost('Rut')];
             $response = $profesor->eliminar($data);
             if($response){
                 return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
             }
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
-        }else{
+        }else if($userType === 'alumno'){
             $alumno = new usuarioAlumno();
-            $data = ["Rut" => $this->request->getPost('Rut')];
             $response = $alumno->eliminar($data);
             if($response){
                 return $this->response->setJSON(['Mensaje' => 'Se elimino de forma correcta' ]);
             }
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al eliminar administrador']);
         }
+
+        //excepción en caso de usuario invalido
+        return $this->response->setStatusCode(401)->setJSON(['error' => 'tipo de usuario invalido']);
     }
 
     public function test(){
