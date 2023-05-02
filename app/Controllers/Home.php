@@ -97,13 +97,18 @@ class Home extends BaseController
     }
 
     public function createUser(){
+        //datos globales
         $token = $this->request->getHeaderLine('Authorization');
         $userType = $this->request->getPost('userType');
         $Rut = $this->request->getPost('RutAdmin');
-        if (!$this->validateToken($token, $Rut, $userType)) {
+        $password = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
+
+        //validacion del token de seguridad
+        if (!$this->validateToken($token, $Rut, "administrador")) {
             return $this->response->setJSON(['success' => false, 'message' => 'Token de seguridad inválido']);
         }
-        $password = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
+        
+        //creacion de usuario de tipo admin
         if($userType === 'administrador'){
             $data = [
                 'Rut' => $this->request->getPost('Rut'),
@@ -118,7 +123,8 @@ class Home extends BaseController
                 return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
             }
             return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo administrador']);
-        }else if($userType === 'profesor'){
+        }else {
+            //datos globales necesarios para la creacion de usuario profesor y alumno
             $data = [
                 'Rut' => $this->request->getPost('Rut'),
                 'Nombre' => $this->request->getPost('Nombre'), 
@@ -132,33 +138,28 @@ class Home extends BaseController
                 'FechaIngreso' => $this->request->getPost('FechaIngreso'),
                 'Imagen' => $this->request->getPost('Imagen'),      
             ];
-            $profesor = new usuarioProfesor();
-            $response = $profesor->insertar($data);
-            if($response > 0){
-                return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
+
+            //creacion de usuario profesor
+            if($userType === 'profesor'){
+                $profesor = new usuarioProfesor();
+                $response = $profesor->insertar($data);
+                if($response > 0){
+                    return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
+                }
+                return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo profesor']);
             }
-            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo profesor']);
-        }else{
-            $data = [
-                'Rut' => $this->request->getPost('Rut'),
-                'Nombre' => $this->request->getPost('Nombre'), 
-                'ApellidoM' => $this->request->getPost('ApellidoM'), 
-                'ApellidoP' => $this->request->getPost('ApellidoP'), 
-                'Constraseña' => $password,
-                'Direccion' => $this->request->getPost('Direccion'),
-                'Comuna' => $this->request->getPost('Comuna'),
-                'Region' => $this->request->getPost('Region'),
-                'FechaNacimiento' => $this->request->getPost('FechaNacimiento'),
-                'FechaIngreso' => $this->request->getPost('FechaIngreso'),
-                'Imagen' => $this->request->getPost('Imagen'),      
-            ];
-            $alumno = new usuarioAlumno();
-            $response = $alumno->insertar($data);
-            if($response > 0){
-                return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
+
+            //creacion de usuario alumno
+            else if($userType === 'alumno'){
+                $alumno = new usuarioAlumno();
+                $response = $alumno->insertar($data);
+                if($response > 0){
+                    return $this->response->setJSON(['Mensaje' => 'Se creo de forma correcta' ]);
+                }
+                return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo alumno']);
             }
-            return $this->response->setStatusCode(401)->setJSON(['error' => 'error al crear nuevo alumno']);
         }
+        return $this->response->setStatusCode(401)->setJSON(['error' => 'tipo de usuario invalido']);
     }
 
     public function deleteUser(){
@@ -198,8 +199,7 @@ class Home extends BaseController
     public function test(){
         $token = $this->request->getHeaderLine('Authorization');
         $Rut = $this->request->getPost('Rut');
-        $userType = $this->request->getPost('userType');
-        if(!$this->validateToken($token, $Rut, $userType)){
+        if(!$this->validateToken($token, $Rut, "administrador")){
             return $this->response->setJSON(['Mensaje' => 'Token invalido' ]);
         }
         return $this->response->setJSON(['Mensaje' => 'Token valido' ]);
